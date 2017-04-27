@@ -39,7 +39,10 @@ function serveFile(file, type, req, res) {
  * @param {http.serverResponse} res - the response object
  */
 function handleRequest(req, res) {
-  switch(req.url) {
+  var url = require('url').parse(req.url);
+
+
+  switch(url.pathname) {
     // Serving static files
     case '/':
     case '/index.html':
@@ -63,9 +66,26 @@ function handleRequest(req, res) {
       serveFile('data/united-states.json', 'application/json', req, res);
       break;
 
+    case '/add-location':
+      addLocation(req, res);
+      break;
+
     // Serve error code
     default:
       res.statusCode = 404;
       res.end("Not found");
   }
+}
+
+function addLocation(req, res){
+  var url = require('url').parse(req.url);
+  var qs = require('qs').parse(url.query);
+  var address = qs.address;
+
+  // Perform geolocaiton with address
+  http.get("http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + address, function(err, body){
+    if(err){
+      // REdirect back to index
+    }
+  })
 }
